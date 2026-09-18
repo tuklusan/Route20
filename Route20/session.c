@@ -74,12 +74,12 @@ static void DataCallback(uint16 locAddr, byte *data, uint16 dataLength);
 void SessionInitialise(void)
 {
     unsigned int i;
-    for (i = 0; i < MAX_SESSIONS; i++)
+    for (i = 0; i < MAX_OBJECTS; i++)
     {
         memset(&ObjectRegistrationTable[i], 0, sizeof(object_registration_t));
     }
 
-    for (i = 0; i < MAX_OBJECTS; i++)
+    for (i = 0; i < MAX_SESSIONS; i++)
     {
         memset(&SessionTable[i], 0, sizeof(session_t));
     }
