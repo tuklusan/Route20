@@ -107,8 +107,6 @@ int EthVdeLineStart(line_t *line)
     return 0;
 #else
     eth_vde_t *context;
-    vde_open_args_t args;
-
     Log(LogEthVdeLine, LogInfo, "Starting VDE line %s\n", line->name);
     context = (eth_vde_t *)calloc(1, sizeof(*context));
     if (context == NULL)
@@ -122,11 +120,10 @@ int EthVdeLineStart(line_t *line)
         return 0;
     }
 
-    memset(&args, 0, sizeof(args));
     if (context->open_real != NULL)
-        context->connection = context->open_real(line->name, "Route20", 1, &args);
+        context->connection = context->open_real(line->name, "Route20", 1, NULL);
     else
-        context->connection = context->open(line->name, "Route20", &args);
+        context->connection = context->open(line->name, "Route20", NULL);
     if (context->connection == NULL)
     {
         Log(LogEthVdeLine, LogError, "Could not open VDE network %s\n", line->name);
