@@ -49,6 +49,7 @@ typedef struct
 } vde_open_args_t;
 
 typedef void *(*vde_open_fn)(char *, char *, vde_open_args_t *);
+typedef void *(*vde_open_real_fn)(char *, char *, int, vde_open_args_t *);
 typedef int (*vde_datafd_fn)(void *);
 typedef int (*vde_close_fn)(void *);
 typedef ssize_t (*vde_recv_fn)(void *, void *, size_t, int);
@@ -59,6 +60,7 @@ typedef struct
     void *library;
     void *connection;
     vde_open_fn open;
+    vde_open_real_fn open_real;
     vde_datafd_fn datafd;
     vde_close_fn close;
     vde_recv_fn recv;
@@ -67,20 +69,28 @@ typedef struct
 
 static int EthVdeLoad(eth_vde_t *context)
 {
-    context->library = dlopen("libvdeplug.so.3", RTLD_NOW | RTLD_LOCAL);
+    context->library = dlopen("libvdeplug.so.2", RTLD_NOW | RTLD_LOCAL);
     if (context->library == NULL)
         context->library = dlopen("libvdeplug.so", RTLD_NOW | RTLD_LOCAL);
     if (context->library == NULL)
+        context->library = dlopen("libvdeplug.so.3", RTLD_NOW | RTLD_LOCAL);
+    if (context->library == NULL)
         return 0;
 
-    context->open = (vde_open_fn)dlsym(context->library, "vde_open");
+    /*
+     * Modern libvdeplug exposes vde_open as a source-level macro whose ABI
+     * entry point is vde_open_real.  Older VDE releases exported vde_open.
+     */
+    context->open_real = (vde_open_real_fn)dlsym(context->library, "vde_open_real");
+    if (context->open_real == NULL)
+        context->open = (vde_open_fn)dlsym(context->library, "vde_open");
     context->datafd = (vde_datafd_fn)dlsym(context->library, "vde_datafd");
     context->close = (vde_close_fn)dlsym(context->library, "vde_close");
     context->recv = (vde_recv_fn)dlsym(context->library, "vde_recv");
     context->send = (vde_send_fn)dlsym(context->library, "vde_send");
-    if (context->open == NULL || context->datafd == NULL ||
-        context->close == NULL || context->recv == NULL ||
-        context->send == NULL)
+    if ((context->open_real == NULL && context->open == NULL) ||
+        context->datafd == NULL || context->close == NULL ||
+        context->recv == NULL || context->send == NULL)
     {
         dlclose(context->library);
         memset(context, 0, sizeof(*context));
@@ -113,7 +123,10 @@ int EthVdeLineStart(line_t *line)
     }
 
     memset(&args, 0, sizeof(args));
-    context->connection = context->open(line->name, "Route20", &args);
+    if (context->open_real != NULL)
+        context->connection = context->open_real(line->name, "Route20", 1, &args);
+    else
+        context->connection = context->open(line->name, "Route20", &args);
     if (context->connection == NULL)
     {
         Log(LogEthVdeLine, LogError, "Could not open VDE network %s\n", line->name);
