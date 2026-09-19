@@ -20,6 +20,7 @@ ROUTE20 = adjacency.c \
           eth_decnet.c \
           eth_init_layer.c \
           eth_pcap_line.c \
+          eth_vde_line.c \
           eth_sock_line.c \
           forwarding.c \
           forwarding_database.c \
@@ -44,5 +45,5 @@ ROUTE20 = adjacency.c \
           update.c
 
 route20 : ${ROUTE20}
-	${CC} ${ROUTE20} $(CC_OUTSPEC) ${LDFLAGS} -lpcap
+	${CC} ${ROUTE20} $(CC_OUTSPEC) ${LDFLAGS} -lpcap -ldl
 

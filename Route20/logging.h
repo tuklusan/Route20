@@ -42,6 +42,7 @@ typedef enum
 	LogEthInit,
     LogEthCircuit,
 	LogEthPcapLine,
+	LogEthVdeLine,
 	LogEthSockLine,
 	LogDdcmpSock,
 	LogDdcmp,

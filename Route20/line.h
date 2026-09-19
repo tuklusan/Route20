@@ -35,6 +35,7 @@ typedef struct line *line_ptr;
 typedef enum
 {
     PcapLineType,
+    VdeLineType,
     SockLineType,
     DDCMPSockLineType
 } LineType;
@@ -75,6 +76,7 @@ typedef struct line
 } line_t;
 
 void LineCreateEthernetPcap(line_ptr line, char *name, void *notifyContext, void (*lineNotifyData)(line_ptr line));
+void LineCreateEthernetVde(line_ptr line, char *name, void *notifyContext, void (*lineNotifyData)(line_ptr line));
 void LineCreateEthernetSocket(line_ptr line, char *name, uint16 receivePort, char *destinationHostName, uint16 destinationPort, void *notifyContext, void (*lineNotifyData)(line_ptr line));
 void LineCreateDdcmpSocket(line_ptr line, char *name, char *destinationHostName, uint16 destinationPort, int connectPoll, void *notifyContext, void (*lineNotifyData)(line_ptr line));
 

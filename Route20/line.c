@@ -32,6 +32,7 @@
 #include "line.h"
 #include "eth_pcap_line.h"
 #include "eth_sock_line.h"
+#include "eth_vde_line.h"
 #include "ddcmp_sock_line.h"
 
 static void LineUp(line_ptr line);
@@ -39,6 +40,26 @@ static void LineDown(line_ptr line);
 static void LineWaitEventHandler(void *context);
 
 // TODO: abstract properly by putting common functions for read/write etc which do logging, stats etc, then delegate to actual line implementations.
+
+void LineCreateEthernetVde(line_ptr line, char *name, void *notifyContext, void (*lineNotifyData)(line_ptr line))
+{
+	line->name = (char *)malloc(strlen(name)+1);
+	strcpy(line->name, name);
+	line->lineContext = NULL;
+    line->notifyContext = notifyContext;
+    line->lineType = VdeLineType;
+	line->lineState = LineStateOff;
+    memset(&line->stats, 0, sizeof(line->stats));
+
+	line->LineStart = EthVdeLineStart;
+	line->LineStop = EthVdeLineStop;
+    line->LineUp = LineUp;
+    line->LineDown = LineDown;
+	line->LineReadPacket = EthVdeLineReadPacket;
+	line->LineWritePacket = EthVdeLineWritePacket;
+	line->LineWaitEventHandler = LineWaitEventHandler;
+    line->LineNotifyData = lineNotifyData;
+}
 
 void LineCreateEthernetPcap(line_ptr line, char *name, void *notifyContext, void (*lineNotifyData)(line_ptr line))
 {

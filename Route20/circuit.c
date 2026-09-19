@@ -37,6 +37,7 @@
 
 int numCircuits = 0;
 int numEthPcapCircuits = 0;
+int numEthVdeCircuits = 0;
 int numEthSockCircuits = 0;
 int numDdcmpCircuits = 0;
 
@@ -96,6 +97,28 @@ void CircuitReject(circuit_t *circuit)
 	{
 		CircuitDown(circuit);
 	}
+}
+
+void CircuitCreateEthernetVde(circuit_ptr circuit, char *name, int cost, void (*waitEventHandler)(void *context))
+{
+    circuit->name = (char *)malloc(strlen(name)+1);
+	strcpy(circuit->name, name);
+	circuit->context = (void *)EthCircuitCreateVde(circuit);
+	circuit->circuitType = EthernetCircuit;
+	circuit->state = CircuitStateOff;
+	circuit->cost = cost;
+	circuit->startLevel1Node = FirstLevel1Node();
+
+	circuit->Start = EthCircuitStart;
+	circuit->Up = EthCircuitUp;
+	circuit->Down = EthCircuitDown;
+	circuit->ReadPacket = EthCircuitReadPacket;
+	circuit->WritePacket = EthCircuitWritePacket;
+	circuit->Stop = EthCircuitStop;
+	circuit->Reject = NULL;
+	circuit->WaitEventHandler = waitEventHandler;
+
+    numEthVdeCircuits++;
 }
 
 void CircuitCreateEthernetPcap(circuit_ptr circuit, char *name, int cost, void (*waitEventHandler)(void *context))

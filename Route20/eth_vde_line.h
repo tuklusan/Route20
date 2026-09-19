@@ -1,7 +1,7 @@
-/* eth_circuit.h: Ethernet circuit
+/* eth_vde_line.h: Ethernet VDE line
   ------------------------------------------------------------------------------
 
-   Copyright (c) 2012, Robert M. A. Jarratt
+   Copyright (c) 2014, Robert M. A. Jarratt
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -20,35 +20,17 @@
    IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-   Except as contained in this notice, the name of the author shall not be
-   used in advertising or otherwise to promote the sale, use or other dealings
-   in this Software without prior written authorization from the author.
-
   ------------------------------------------------------------------------------*/
 
 #include "packet.h"
 #include "line.h"
 
-#if !defined(ETH_CIRCUIT_H)
+#if !defined(ETH_VDE_LINE_H)
 
-typedef struct eth_circuit *eth_circuit_ptr;
+int EthVdeLineStart(line_t *line);
+void EthVdeLineStop(line_t *line);
+packet_t *EthVdeLineReadPacket(line_t *line);
+int EthVdeLineWritePacket(line_t *line, packet_t *packet);
 
-typedef struct eth_circuit
-{
-	circuit_t *circuit;
-	int        isDesignatedRouter;
-} eth_circuit_t;
-
-eth_circuit_ptr EthCircuitCreatePcap(circuit_t *circuit);
-eth_circuit_ptr EthCircuitCreateVde(circuit_t *circuit);
-eth_circuit_ptr EthCircuitCreateSocket(circuit_t *circuit, uint16 receivePort, char *destinationHostName, uint16 destinationPort);
-
-int EthCircuitStart(circuit_ptr circuit);
-void EthCircuitUp(circuit_ptr circuit);
-void EthCircuitDown(circuit_ptr circuit);
-packet_t *EthCircuitReadPacket(circuit_ptr circuit);
-int EthCircuitWritePacket(circuit_ptr circuit, decnet_address_t *from, decnet_address_t *to, packet_t *, int isHello);
-void EthCircuitStop(circuit_ptr circuit);
-
-#define ETH_CIRCUIT_H
+#define ETH_VDE_LINE_H
 #endif

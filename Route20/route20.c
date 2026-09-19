@@ -115,6 +115,7 @@ void InitialiseLogging(void)
     LogSourceName[LogEthInit] = "ETI";
     LogSourceName[LogEthCircuit] = "ECR";
     LogSourceName[LogEthPcapLine] = "EPL";
+    LogSourceName[LogEthVdeLine] = "EVL";
     LogSourceName[LogEthSockLine] = "ESL";
     LogSourceName[LogDdcmpSock] = "DSK";
     LogSourceName[LogDdcmp] = "DDC";
@@ -446,6 +447,10 @@ static char *ReadLoggingConfig(FILE *f, ConfigReadMode mode, int *ans)
 			{
 				ParseLogLevel(value, &LoggingLevels[LogEthPcapLine]);
 			}
+			else if (stricmp(name, "ethvdeline") == 0)
+			{
+				ParseLogLevel(value, &LoggingLevels[LogEthVdeLine]);
+			}
 			else if (stricmp(name, "ethsockline") == 0)
 			{
 				ParseLogLevel(value, &LoggingLevels[LogEthSockLine]);
@@ -653,8 +658,16 @@ static char *ReadEthernetConfig(FILE *f, ConfigReadMode mode, int *ans)
 			}
 			else
 			{
-				Log(LogGeneral, LogInfo, "Ethernet interface is: %s\n", pcapInterface);
-				CircuitCreateEthernetPcap(&Circuits[1 + numCircuits++], pcapInterface, cost, ProcessCircuitEvent);
+				if (strncmp(pcapInterface, "vde:", 4) == 0)
+				{
+					Log(LogGeneral, LogInfo, "Ethernet VDE network is: %s\n", pcapInterface);
+					CircuitCreateEthernetVde(&Circuits[1 + numCircuits++], pcapInterface, cost, ProcessCircuitEvent);
+				}
+				else
+				{
+					Log(LogGeneral, LogInfo, "Ethernet interface is: %s\n", pcapInterface);
+					CircuitCreateEthernetPcap(&Circuits[1 + numCircuits++], pcapInterface, cost, ProcessCircuitEvent);
+				}
 			}
 		}
 	}

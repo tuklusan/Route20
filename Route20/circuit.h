@@ -33,6 +33,7 @@
 
 extern int numCircuits;
 extern int numEthPcapCircuits;
+extern int numEthVdeCircuits;
 extern int numEthSockCircuits;
 extern int numDdcmpCircuits;
 
@@ -96,6 +97,7 @@ void CircuitDown(circuit_t *circuit);
 void CircuitDownComplete(circuit_t *circuit);
 void CircuitReject(circuit_t *circuit);
 void CircuitCreateEthernetPcap(circuit_ptr circuit, char *name, int cost, void (*waitEventHandler)(void *context));
+void CircuitCreateEthernetVde(circuit_ptr circuit, char *name, int cost, void (*waitEventHandler)(void *context));
 void CircuitCreateEthernetSocket(circuit_ptr circuit, char *name, uint16 receivePort, uint16 destinationPort, int cost, void (*waitEventHandler)(void *context));
 void CircuitCreateDdcmpSocket(circuit_ptr circuit, char *name, uint16 port, int cost, int connectPoll, void (*waitEventHandler)(void *context));
 line_t *GetLineFromCircuit(circuit_t *circuit);

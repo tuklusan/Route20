@@ -33,6 +33,7 @@
 #include "circuit.h"
 #include "eth_circuit.h"
 #include "eth_pcap_line.h"
+#include "eth_vde_line.h"
 #include "eth_sock_line.h"
 #include "timer.h"
 #include "messages.h"
@@ -43,6 +44,18 @@ static void HandleLineNotifyData(line_t *line);
 static void HandleHelloTimer(rtimer_t* timer, char* name, void* context);
 static void HandleLevel2HelloTimer(rtimer_t* timer, char* name, void* context);
 static int IsAddressedToThisNode(packet_t * packet);
+
+eth_circuit_t *EthCircuitCreateVde(circuit_t *circuit)
+{
+	eth_circuit_t *ans = (eth_circuit_t *)calloc(1, sizeof(eth_circuit_t));
+	line_t *line = (line_t *)calloc(1, sizeof(line_t));
+    LineCreateEthernetVde(line, circuit->name, circuit, HandleLineNotifyData);
+
+	ans->circuit = circuit;
+	circuit->line = line;
+
+	return ans;
+}
 
 eth_circuit_t *EthCircuitCreatePcap(circuit_t *circuit)
 {

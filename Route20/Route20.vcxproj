@@ -111,6 +111,7 @@
     <ClCompile Include="eth_init_layer.c" />
     <ClCompile Include="eth_circuit.c" />
     <ClCompile Include="eth_pcap_line.c" />
+    <ClCompile Include="eth_vde_line.c" />
     <ClCompile Include="eth_sock_line.c" />
     <ClCompile Include="forwarding.c" />
     <ClCompile Include="forwarding_database.c" />
@@ -163,6 +164,7 @@
     <ClInclude Include="eth_circuit.h" />
     <ClInclude Include="eth_line.h" />
     <ClInclude Include="eth_pcap_line.h" />
+    <ClInclude Include="eth_vde_line.h" />
     <ClInclude Include="eth_sock_line.h" />
     <ClInclude Include="forwarding.h" />
     <ClInclude Include="forwarding_database.h" />
